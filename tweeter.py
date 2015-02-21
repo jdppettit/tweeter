@@ -1,5 +1,6 @@
 from flask import *
 from config import *
+from hashlib import sha1
 
 import json
 import hmac
