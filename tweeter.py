@@ -10,6 +10,8 @@ def primary():
     elif request.method == "POST":
         data = json.loads(request.data)
         print data
+        print data['hook']['config']['secret']
+        print "New commit by %s, %s" % (str(data['commits'][0]['author']['username']), str(data['commits'][0]['message']))
         return "OK"
 
 if __name__ == '__main__':
