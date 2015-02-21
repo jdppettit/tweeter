@@ -1,7 +1,18 @@
 from flask import *
+from config import *
+
 import json
+import hmac
 
 app = Flask(__name__)
+
+def verify_secret(request, data):
+    sha, signature = request.headers.get('X-Hub-Signature').split('=')
+    if sha != 'sha1':
+        abort(403)
+    res = hmac.new(secret, msg=data, digestmod=sha1)
+    if not hmac.compare_digest(res.hexdigest(), signature):
+        return(403)
 
 @app.route('/', methods=['GET','POST'])
 def primary():
@@ -9,8 +20,7 @@ def primary():
         return "I'm alive."
     elif request.method == "POST":
         data = json.loads(request.data)
-        print data
-        print data['hook']['config']['secret']
+        verify_secret(request, data)
         print "New commit by %s, %s" % (str(data['commits'][0]['author']['username']), str(data['commits'][0]['message']))
         return "OK"
 
