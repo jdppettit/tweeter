@@ -1,0 +1,4 @@
+hashlib==20081119
+hmac==20101005
+requests==2.5.1
+twython==3.2.0

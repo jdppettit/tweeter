@@ -5,6 +5,7 @@ from hashlib import sha1
 import requests
 import json
 import hmac
+import twitterfunctions
 
 app = Flask(__name__)
 
@@ -36,24 +37,27 @@ def primary():
         repo_name = str(data['repository']['name'])
         
         shortened_url = shorten(commit_url)
+        shortened_url = shortened_url[8:]
 
-        message = "New commit by %s on %s: %s %s" % (commit_user,
-                                                        repo_name,
-                                                        commit_message,
-                                                        shortened_url)
-        if len(message) > 255:
-            delta = len(message) - 255
+        message = "%s: %s %s" % (commit_user,
+                                    commit_message,
+                                    shortened_url)
+
+        if len(message) > 140:
+            print "the len was: %s" % str(len(message))
+            delta = len(message) - 140
             delta = delta + 3
             temp_commit_message = str(data['commits'][0]['message'])[:delta]
             temp_commit_message += "..."
             commit_message = temp_commit_message
 
-        message = "New commit by %s on %s: %s %s" % (commit_user,
-                                                        repo_name,
-                                                        commit_message,
-                                                        shortened_url)
+            message = "%s: %s %s" % (commit_user,
+                                        commit_message,
+                                        shortened_url)
 
         print message
+
+        twitterfunctions.make_tweet(message)
 
         return "OK"
 
